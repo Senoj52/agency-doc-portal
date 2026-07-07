@@ -1,0 +1,7 @@
+﻿node_modules/
+.env
+agency_files.db
+uploads/
+.DS_Store
+npm-debug.log
+yarn-error.log
