@@ -152,32 +152,53 @@ app.get('/api/files/:id/download', (req, res) => {
 // ==================== ADMIN ROUTES ====================
 
 // Upload file (admin only)
-app.post('/api/admin/files', authenticateToken, requireAdmin, upload.single('file'), (req, res) => {
+app.post('/api/admin/files', authenticateToken, requireAdmin, upload.array('files', 20), (req, res) => {
   try {
     const { title, description, category } = req.body;
-    const file = req.file;
-    
+    const files = req.files && req.files.length ? req.files : [];
+
     if (!title || !category) {
       return res.status(400).json({ error: 'Title and category are required' });
     }
-    
-    const result = db.prepare(`
+
+    if (files.length === 0) {
+      return res.status(400).json({ error: 'At least one file must be uploaded' });
+    }
+
+    const insert = db.prepare(`
       INSERT INTO files (title, description, category, original_name, stored_name, file_size, mime_type, uploaded_by)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(title, description || '', category, file.originalname, file.filename, file.size, file.mimetype, req.user.username);
-    
-    // Log activity
-    db.prepare('INSERT INTO activity_log (file_id, action, user_info, ip_address) VALUES (?, ?, ?, ?)').run(
-      result.lastInsertRowid,
-      'upload',
-      req.user.username,
-      req.ip
-    );
-    
+    `);
+
+    const uploadedFiles = files.map((file) => {
+      const result = insert.run(
+        title,
+        description || '',
+        category,
+        file.originalname,
+        file.filename,
+        file.size,
+        file.mimetype,
+        req.user.username
+      );
+
+      db.prepare('INSERT INTO activity_log (file_id, action, user_info, ip_address) VALUES (?, ?, ?, ?)').run(
+        result.lastInsertRowid,
+        'upload',
+        req.user.username,
+        req.ip
+      );
+
+      return {
+        fileId: result.lastInsertRowid,
+        originalName: file.originalname
+      };
+    });
+
     res.json({ 
-      success: true, 
-      fileId: result.lastInsertRowid,
-      message: 'File uploaded successfully' 
+      success: true,
+      files: uploadedFiles,
+      message: `${uploadedFiles.length} file(s) uploaded successfully`
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

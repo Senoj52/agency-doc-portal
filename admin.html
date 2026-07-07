@@ -171,12 +171,149 @@
             color: white;
         }
 
+        .upload-dropzone {
+            position: relative;
+            padding: 30px;
+            border: 2px dashed #2a5298;
+            border-radius: 12px;
+            background: rgba(42, 82, 152, 0.05);
+            text-align: center;
+            color: #2a5298;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .upload-dropzone.dragover {
+            background: rgba(42, 82, 152, 0.12);
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 5px rgba(42, 82, 152, 0.08);
+        }
+
+        .upload-dropzone input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .selected-files {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .file-chip {
+            background: #eef4ff;
+            color: #1e3c72;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+            padding-right: 30px;
+        }
+
+        .file-chip .remove-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #c0392b;
+            font-weight: 700;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity .15s ease;
+        }
+
+        .file-chip:hover .remove-btn {
+            opacity: 1;
+        }
+
+        .upload-form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(220px, 1fr));
+            gap: 24px;
+            align-items: start;
+        }
+
+        .upload-category-card {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid rgba(42,82,152,0.12);
+        }
+
+        .upload-category-card h4 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #1e3c72;
+        }
+
+        .upload-category-card p {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .upload-category-card .upload-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .upload-progress-bar {
+            height: 10px;
+            width: 100%;
+            background: #eaf0ff;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .upload-progress-bar .progress-bar {
+            width: 0%;
+        }
+
         .upload-form, .files-list {
             background: white;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .upload-form-grid {
+                grid-template-columns: repeat(2, minmax(220px, 1fr));
+            }
+        }
+
+        @media (max-width: 820px) {
+            .upload-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .upload-form-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .file-item {
@@ -329,36 +466,103 @@
             <!-- Upload Form -->
             <div id="uploadTab" class="upload-form">
                 <h3>Upload New Document</h3>
-                <form id="uploadForm">
-                    <div class="form-group">
-                        <label>Document Title *</label>
-                        <input type="text" id="fileTitle" required>
+                <div class="upload-form-grid">
+                    <div class="upload-category-card" data-category="target">
+                        <h4>🎯 Target</h4>
+                        <p>Upload documents directly to the Target category.</p>
+                        <div class="upload-actions">
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" class="category-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="category-description" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Files *</label>
+                                <div class="upload-dropzone">
+                                    <p>Drag and drop files here, or click to choose files</p>
+                                    <input type="file" class="category-file-input" multiple required>
+                                </div>
+                                <div class="selected-files"></div>
+                            </div>
+                            <button type="button" class="btn btn-primary upload-category-button">Upload Target</button>
+                            <div class="upload-progress-bar"><div class="progress-bar"></div></div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="fileDescription" rows="3"></textarea>
+                    <div class="upload-category-card" data-category="accomplished">
+                        <h4>✅ Accomplished</h4>
+                        <p>Upload files directly to the Accomplished category.</p>
+                        <div class="upload-actions">
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" class="category-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="category-description" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Files *</label>
+                                <div class="upload-dropzone">
+                                    <p>Drag and drop files here, or click to choose files</p>
+                                    <input type="file" class="category-file-input" multiple required>
+                                </div>
+                                <div class="selected-files"></div>
+                            </div>
+                            <button type="button" class="btn btn-primary upload-category-button">Upload Accomplished</button>
+                            <div class="upload-progress-bar"><div class="progress-bar"></div></div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select id="fileCategory" required>
-                            <option value="">Select Category</option>
-                            <option value="target">🎯 Target</option>
-                            <option value="accomplished">✅ Accomplished</option>
-                            <option value="approved">👍 Approved</option>
-                            <option value="signed">✍️ Signed</option>
-                        </select>
+                    <div class="upload-category-card" data-category="approved">
+                        <h4>👍 Approved</h4>
+                        <p>Upload documents directly to the Approved category.</p>
+                        <div class="upload-actions">
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" class="category-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="category-description" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Files *</label>
+                                <div class="upload-dropzone">
+                                    <p>Drag and drop files here, or click to choose files</p>
+                                    <input type="file" class="category-file-input" multiple required>
+                                </div>
+                                <div class="selected-files"></div>
+                            </div>
+                            <button type="button" class="btn btn-primary upload-category-button">Upload Approved</button>
+                            <div class="upload-progress-bar"><div class="progress-bar"></div></div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>File *</label>
-                        <input type="file" id="fileInput" required>
+                    <div class="upload-category-card" data-category="signed">
+                        <h4>✍️ Signed</h4>
+                        <p>Upload documents directly to the Signed category.</p>
+                        <div class="upload-actions">
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" class="category-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="category-description" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Files *</label>
+                                <div class="upload-dropzone">
+                                    <p>Drag and drop files here, or click to choose files</p>
+                                    <input type="file" class="category-file-input" multiple required>
+                                </div>
+                                <div class="selected-files"></div>
+                            </div>
+                            <button type="button" class="btn btn-primary upload-category-button">Upload Signed</button>
+                            <div class="upload-progress-bar"><div class="progress-bar"></div></div>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Upload Document</button>
-                </form>
-                <div id="uploadProgress" class="upload-progress">
-                    <div class="progress-track">
-                        <div id="progressBar" class="progress-bar"></div>
-                    </div>
-                    <p class="upload-status">Uploading...</p>
                 </div>
             </div>
 
@@ -479,6 +683,7 @@
         function showDashboard() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
+            setupUploadDropzone();
         }
 
         async function loadDashboardData() {
@@ -584,49 +789,134 @@
             }
         }
 
-        document.getElementById('uploadForm')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData();
-            formData.append('title', document.getElementById('fileTitle').value);
-            formData.append('description', document.getElementById('fileDescription').value);
-            formData.append('category', document.getElementById('fileCategory').value);
-            formData.append('file', document.getElementById('fileInput').files[0]);
+        function setupUploadDropzone() {
+            document.querySelectorAll('.upload-category-card').forEach(card => {
+                const dropzone = card.querySelector('.upload-dropzone');
+                const fileInput = card.querySelector('.category-file-input');
+                const selectedFiles = card.querySelector('.selected-files');
+                const progressBar = card.querySelector('.progress-bar');
+                const uploadButton = card.querySelector('.upload-category-button');
+                const titleInput = card.querySelector('.category-title');
+                const descriptionInput = card.querySelector('.category-description');
+                const category = card.dataset.category;
 
-            const progressDiv = document.getElementById('uploadProgress');
-            const progressBar = document.getElementById('progressBar');
-            progressDiv.style.display = 'block';
+                function updateSelectedFiles() {
+                    selectedFiles.innerHTML = '';
+                    Array.from(fileInput.files).forEach((file, index) => {
+                        const chip = document.createElement('div');
+                        chip.className = 'file-chip';
+                        chip.textContent = file.name;
 
-            try {
-                const xhr = new XMLHttpRequest();
-                
-                xhr.upload.addEventListener('progress', (e) => {
-                    if (e.lengthComputable) {
-                        const percent = (e.loaded / e.total) * 100;
-                        progressBar.style.width = percent + '%';
-                    }
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-btn';
+                        removeBtn.type = 'button';
+                        removeBtn.textContent = '×';
+                        removeBtn.title = 'Remove file';
+
+                        removeBtn.addEventListener('click', () => {
+                            // build a new DataTransfer without this file
+                            const dt = new DataTransfer();
+                            Array.from(fileInput.files).forEach((f, i) => {
+                                if (!(f.name === file.name && f.size === file.size && f.type === file.type && i === index)) {
+                                    dt.items.add(f);
+                                }
+                            });
+                            fileInput.files = dt.files;
+                            updateSelectedFiles();
+                        });
+
+                        chip.appendChild(removeBtn);
+                        selectedFiles.appendChild(chip);
+                    });
+                }
+
+                fileInput.addEventListener('change', updateSelectedFiles);
+
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropzone.classList.add('dragover');
+                    });
                 });
 
-                xhr.addEventListener('load', () => {
-                    if (xhr.status === 200) {
-                        alert('File uploaded successfully!');
-                        e.target.reset();
-                        progressDiv.style.display = 'none';
-                        progressBar.style.width = '0%';
-                        loadDashboardData();
-                    } else {
-                        alert('Upload failed');
-                    }
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropzone.classList.remove('dragover');
+                    });
                 });
 
-                xhr.open('POST', '/api/admin/files');
-                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                xhr.send(formData);
-            } catch (error) {
-                alert('Upload failed');
-                progressDiv.style.display = 'none';
-            }
-        });
+                dropzone.addEventListener('drop', (e) => {
+                    const dt = e.dataTransfer;
+                    if (!dt) return;
+                    const files = Array.from(dt.files);
+                    if (!files.length) return;
+
+                    const dataTransfer = new DataTransfer();
+                    files.forEach(file => dataTransfer.items.add(file));
+                    fileInput.files = dataTransfer.files;
+                    updateSelectedFiles();
+                });
+
+                uploadButton.addEventListener('click', async () => {
+                    const title = titleInput.value.trim();
+                    const description = descriptionInput.value.trim();
+                    const files = fileInput.files;
+
+                    if (!title) {
+                        alert('Please enter a title for this upload.');
+                        return;
+                    }
+
+                    if (!files.length) {
+                        alert('Please choose at least one file to upload.');
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('description', description);
+                    formData.append('category', category);
+                    for (const file of files) {
+                        formData.append('files', file);
+                    }
+
+                    progressBar.style.width = '0%';
+
+                    try {
+                        const xhr = new XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', (e) => {
+                            if (e.lengthComputable) {
+                                const percent = (e.loaded / e.total) * 100;
+                                progressBar.style.width = percent + '%';
+                            }
+                        });
+
+                        xhr.addEventListener('load', () => {
+                            if (xhr.status === 200) {
+                                alert(`Uploaded ${files.length} file(s) to ${category}`);
+                                titleInput.value = '';
+                                descriptionInput.value = '';
+                                fileInput.value = '';
+                                selectedFiles.innerHTML = '';
+                                progressBar.style.width = '0%';
+                                loadDashboardData();
+                            } else {
+                                alert('Upload failed. Please try again.');
+                            }
+                        });
+
+                        xhr.open('POST', '/api/admin/files');
+                        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                        xhr.send(formData);
+                    } catch (error) {
+                        alert('Upload failed. Please try again.');
+                    }
+                });
+            });
+        }
 
         function editFile(id, title, description, category) {
             document.getElementById('editFileId').value = id;
