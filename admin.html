@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+
+        .upload-form, .files-list {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .default-login-text {
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .upload-progress {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-track {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+
+        .upload-status {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .tab-panel-hidden {
+            display: none;
+        }
+
+        .files-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <h1 class="login-title">🔐 Admin Login</h1>
+        <div id="loginError" class="error-message"></div>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+        </div>
+        <button class="btn btn-primary" onclick="login()">Login</button>
+        <p class="center-text default-login-text">
+            Default: admin / admin123
+        </p>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <div class="dashboard-header">
+            <div class="dashboard-header-content">
+                <h2>📊 Agency Admin Panel</h2>
+                <button class="btn-sm btn-danger" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('upload')">📤 Upload File</button>
+                <button class="tab" onclick="switchTab('files')">📁 Manage Files</button>
+                <button class="tab" onclick="switchTab('activity')">📋 Activity Log</button>
+            </div>
+
+            <!-- Upload Form -->
+            <div id="uploadTab" class="upload-form">
+                <h3>Upload New Document</h3>
+                <form id="uploadForm">
+                    <div class="form-group">
+                        <label>Document Title *</label>
+                        <input type="text" id="fileTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="fileDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="fileCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="target">🎯 Target</option>
+                            <option value="accomplished">✅ Accomplished</option>
+                            <option value="approved">👍 Approved</option>
+                            <option value="signed">✍️ Signed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>File *</label>
+                        <input type="file" id="fileInput" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload Document</button>
+                </form>
+                <div id="uploadProgress" class="upload-progress">
+                    <div class="progress-track">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+                    <p class="upload-status">Uploading...</p>
+                </div>
+            </div>
+
+            <!-- Files List -->
+            <div id="filesTab" class="files-list tab-panel-hidden">
+                <div class="files-header">
+                    <h3>Document List</h3>
+                    <select onchange="filterAdminFiles()" id="adminCategoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="target">Target</option>
+                        <option value="accomplished">Accomplished</option>
+                        <option value="approved">Approved</option>
+                        <option value="signed">Signed</option>
+                    </select>
+                </div>
+                <div id="filesList"></div>
+            </div>
+
+            <!-- Activity Log -->
+            <div id="activityTab" class="files-list tab-panel-hidden">
+                <h3>Recent Activity</h3>
+                <div id="activityLog"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Document</h3>
+            <form id="editForm">
+                <input type="hidden" id="editFileId">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="editTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="editCategory">
+                        <option value="target">Target</option>
+                        <option value="accomplished">Accomplished</option>
+                        <option value="approved">Approved</option>
+                        <option value="signed">Signed</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-danger" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('adminToken');
+
+        // Check if already logged in
+        if (token) {
+            verifyToken();
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    token = data.token;
+                    localStorage.setItem('adminToken', token);
+                    showDashboard();
+                    loadDashboardData();
+                } else {
+                    document.getElementById('loginError').textContent = data.error;
+                    document.getElementById('loginError').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('loginError').textContent = 'Login failed. Please try again.';
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        async function verifyToken() {
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    showDashboard();
+                    loadDashboardData();
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                logout();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            token = null;
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+        }
+
+        async function loadDashboardData() {
+            await Promise.all([
+                loadStats(),
+                loadFiles(),
+                loadActivity()
+            ]);
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/admin/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const stats = await response.json();
+                
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.totalFiles}</div>
+                        <div class="stat-label">Total Documents</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.categoryStats.target}</div>
+                        <div class="stat-label">🎯 Target</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.categoryStats.accomplished}</div>
+                        <div class="stat-label">✅ Accomplished</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.categoryStats.approved}</div>
+                        <div class="stat-label">👍 Approved</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.categoryStats.signed}</div>
+                        <div class="stat-label">✍️ Signed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.totalDownloads}</div>
+                        <div class="stat-label">Total Downloads</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadFiles() {
+            try {
+                const category = document.getElementById('adminCategoryFilter')?.value || '';
+                const response = await fetch(`/api/admin/files?category=${category}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const files = await response.json();
+                
+                if (files.length === 0) {
+                    document.getElementById('filesList').innerHTML = '<p style="text-align: center; color: #999;">No files found</p>';
+                    return;
+                }
+
+                document.getElementById('filesList').innerHTML = files.map(file => `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <strong>${file.title}</strong>
+                            <span class="category-badge category-${file.category}">${file.category}</span>
+                            <br>
+                            <small style="color: #999;">
+                                ${file.original_name} • ${formatFileSize(file.file_size)} • Downloads: ${file.download_count}
+                            </small>
+                        </div>
+                        <div class="file-actions">
+                            <button class="btn-sm btn-primary" onclick="editFile(${file.id}, '${file.title}', '${file.description || ''}', '${file.category}')">Edit</button>
+                            <button class="btn-sm btn-danger" onclick="deleteFile(${file.id})">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading files:', error);
+            }
+        }
+
+        async function loadActivity() {
+            try {
+                const response = await fetch('/api/admin/activity', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const activities = await response.json();
+                
+                document.getElementById('activityLog').innerHTML = activities.map(activity => `
+                    <div class="file-item">
+                        <div>
+                            <strong>${activity.action.toUpperCase()}</strong>: ${activity.file_title || 'Unknown file'}
+                            <br>
+                            <small style="color: #999;">
+                                By: ${activity.user_info} • ${new Date(activity.timestamp).toLocaleString()}
+                            </small>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading activity:', error);
+            }
+        }
+
+        document.getElementById('uploadForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('title', document.getElementById('fileTitle').value);
+            formData.append('description', document.getElementById('fileDescription').value);
+            formData.append('category', document.getElementById('fileCategory').value);
+            formData.append('file', document.getElementById('fileInput').files[0]);
+
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            progressDiv.style.display = 'block';
+
+            try {
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = (e.loaded / e.total) * 100;
+                        progressBar.style.width = percent + '%';
+                    }
+                });
+
+                xhr.addEventListener('load', () => {
+                    if (xhr.status === 200) {
+                        alert('File uploaded successfully!');
+                        e.target.reset();
+                        progressDiv.style.display = 'none';
+                        progressBar.style.width = '0%';
+                        loadDashboardData();
+                    } else {
+                        alert('Upload failed');
+                    }
+                });
+
+                xhr.open('POST', '/api/admin/files');
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                xhr.send(formData);
+            } catch (error) {
+                alert('Upload failed');
+                progressDiv.style.display = 'none';
+            }
+        });
+
+        function editFile(id, title, description, category) {
+            document.getElementById('editFileId').value = id;
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editDescription').value = description;
+            document.getElementById('editCategory').value = category;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        document.getElementById('editForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('editFileId').value;
+            const data = {
+                title: document.getElementById('editTitle').value,
+                description: document.getElementById('editDescription').value,
+                category: document.getElementById('editCategory').value
+            };
+
+            try {
+                const response = await fetch(`/api/admin/files/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('File updated successfully!');
+                    closeEditModal();
+                    loadDashboardData();
+                }
+            } catch (error) {
+                alert('Update failed');
+            }
+        });
+
+        async function deleteFile(id) {
+            if (!confirm('Are you sure you want to delete this file?')) return;
+
+            try {
+                const response = await fetch(`/api/admin/files/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    alert('File deleted successfully!');
+                    loadDashboardData();
+                }
+            } catch (error) {
+                alert('Delete failed');
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('uploadTab').style.display = tab === 'upload' ? 'block' : 'none';
+            document.getElementById('filesTab').style.display = tab === 'files' ? 'block' : 'none';
+            document.getElementById('activityTab').style.display = tab === 'activity' ? 'block' : 'none';
+            
+            if (tab === 'files') loadFiles();
+            if (tab === 'activity') loadActivity();
+        }
+
+        function filterAdminFiles() {
+            loadFiles();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

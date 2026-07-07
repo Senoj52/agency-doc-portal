@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Document Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .admin-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 2px solid white;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .admin-link:hover {
+            background: white;
+            color: #1e3c72;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .category-tab.active {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+
+        .category-tab.all-tab {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .file-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .file-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .file-category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .category-target { background: #fff3cd; color: #856404; }
+        .category-accomplished { background: #d4edda; color: #155724; }
+        .category-approved { background: #cce5ff; color: #004085; }
+        .category-signed { background: #e2d5f1; color: #6f42c1; }
+
+        .file-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .file-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .file-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .file-size {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .no-files {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-files-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2a5298;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">🏛️ Agency Document Portal</div>
+            <a href="admin.html" class="admin-link">Admin Login</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="category-tabs" id="categoryTabs">
+            <button class="category-tab all-tab active" onclick="filterByCategory('')">
+                📁 All Documents <span class="badge" id="allCount">0</span>
+            </button>
+            <button class="category-tab" onclick="filterByCategory('target')">
+                🎯 Target <span class="badge" id="targetCount">0</span>
+            </button>
+            <button class="category-tab" onclick="filterByCategory('accomplished')">
+                ✅ Accomplished <span class="badge" id="accomplishedCount">0</span>
+            </button>
+            <button class="category-tab" onclick="filterByCategory('approved')">
+                👍 Approved <span class="badge" id="approvedCount">0</span>
+            </button>
+            <button class="category-tab" onclick="filterByCategory('signed')">
+                ✍️ Signed <span class="badge" id="signedCount">0</span>
+            </button>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Search documents..." oninput="searchFiles()">
+        </div>
+
+        <div class="files-grid" id="filesGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading documents...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCategory = '';
+        let currentSearch = '';
+        let allFiles = [];
+
+        // Load files on page load
+        document.addEventListener('DOMContentLoaded', loadFiles);
+
+        async function loadFiles() {
+            try {
+                const response = await fetch(`/api/files?category=${currentCategory}&search=${currentSearch}`);
+                allFiles = await response.json();
+                displayFiles(allFiles);
+                updateCategoryCounts();
+            } catch (error) {
+                console.error('Error loading files:', error);
+                document.getElementById('filesGrid').innerHTML = `
+                    <div class="no-files">
+                        <div class="no-files-icon">❌</div>
+                        <h3>Error loading documents</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayFiles(files) {
+            const grid = document.getElementById('filesGrid');
+            
+            if (files.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-files">
+                        <div class="no-files-icon">📭</div>
+                        <h3>No documents found</h3>
+                        <p>${currentSearch ? 'Try different search terms' : 'Documents in this category will appear here'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = files.map(file => `
+                <div class="file-card">
+                    <span class="file-category-badge category-${file.category}">${file.category}</span>
+                    <h3 class="file-title">${file.title}</h3>
+                    <p class="file-description">${file.description || 'No description available'}</p>
+                    <div class="file-meta">
+                        <span class="file-size">📦 ${formatFileSize(file.file_size)}</span>
+                        <a href="/api/files/${file.id}/download" class="download-btn">⬇ Download</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            // Update active tab
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            loadFiles();
+        }
+
+        function searchFiles() {
+            currentSearch = document.getElementById('searchInput').value;
+            loadFiles();
+        }
+
+        async function updateCategoryCounts() {
+            try {
+                const response = await fetch('/api/files');
+                const files = await response.json();
+                
+                const counts = {
+                    all: files.length,
+                    target: files.filter(f => f.category === 'target').length,
+                    accomplished: files.filter(f => f.category === 'accomplished').length,
+                    approved: files.filter(f => f.category === 'approved').length,
+                    signed: files.filter(f => f.category === 'signed').length
+                };
+                
+                document.getElementById('allCount').textContent = counts.all;
+                document.getElementById('targetCount').textContent = counts.target;
+                document.getElementById('accomplishedCount').textContent = counts.accomplished;
+                document.getElementById('approvedCount').textContent = counts.approved;
+                document.getElementById('signedCount').textContent = counts.signed;
+            } catch (error) {
+                console.error('Error updating counts:', error);
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>
